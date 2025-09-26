@@ -72,12 +72,12 @@
       "⌛ 网络正在帮你打包快递…",
       "🐢 有点慢，但乌龟也能到终点！",
       "🎵 等待的时候，不妨哼一首歌～",
-      "🤖 GitHub 正在努力唤醒图片…",
+      "🤖 正在努力唤醒图片…",
       "🌌 放松一下眼睛，眺望一下远方吧。"
     ];
 
     function tick() {
-      timerEl.textContent = sec;
+      timerEl.textContent = sec < 10 ? '0' + sec : sec + 's';
       if (sec % 5 === 0) { // 每5秒换一句话
         msgEl.textContent = messages[Math.floor(Math.random() * messages.length)];
       }

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片加载中 - 请稍候</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2eaadc',
+            secondary: '#171515',
+            accent: '#f1e05a',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+
+<body
+  class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-gray-800">
+  <!-- 页面容器 -->
+  <div
+    class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+    <!-- 顶部装饰条 -->
+    <div class="h-2 bg-gradient-to-r from-primary to-accent"></div>
+
+    <!-- 主要内容 -->
+    <div class="p-8 text-center">
+      <!-- 加载动画 -->
+      <div class="w-24 h-24 mx-auto mb-6 relative">
+        <div class="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        <div class="absolute inset-3 rounded-full bg-primary/10 animate-pulse-slow"></div>
+        <i
+          class="fa fa-github absolute inset-0 flex items-center justify-center text-4xl text-gray-700 animate-float"></i>
+      </div>
+
+      <!-- 标题和说明 -->
+      <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-gray-800 mb-4 text-shadow">图片正在准备中</h1>
+      <p class="text-gray-600 mb-6">GitHub图床需要一点时间处理图片，通常约1分钟</p>
+
+      <!-- 倒计时 -->
+      <div class="mb-8">
+        <p class="text-sm text-gray-500 mb-2">预计剩余时间</p>
+        <div class="text-2xl font-mono font-bold text-primary" id="countdown">01:00</div>
+      </div>
+
+      <!-- 小知识卡片 -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left border border-gray-100">
+        <p class="text-xs text-gray-500 mb-2 flex items-center">
+          <i class="fa fa-lightbulb-o mr-2 text-accent"></i> 等待小知识
+        </p>
+        <p class="text-sm text-gray-700" id="funFact">GitHub的CDN需要时间同步新上传的文件，这就是为什么刚上传的图片不能立即访问。</p>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button id="refreshBtn"
+          class="px-6 py-3 bg-primary text-white rounded-lg shadow hover:bg-primary/90 transition-all flex items-center justify-center">
+          <i class="fa fa-refresh mr-2"></i> 立即刷新
+        </button>
+        <button id="skipBtn"
+          class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center">
+          <i class="fa fa-times mr-2"></i> 稍后查看
+        </button>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="bg-gray-50 px-6 py-4 text-center text-xs text-gray-500">
+      <p>页面将在倒计时结束后自动刷新</p>
+    </div>
+  </div>
+
+  <!-- 底部信息 -->
+  <p class="mt-6 text-xs text-gray-400 text-center max-w-md">
+    这是一个临时页面，仅在图片加载准备期间显示
+  </p>
+
+  <script>
+    // 倒计时功能
+    let seconds = 60;
+    const countdownEl = document.getElementById('countdown');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const skipBtn = document.getElementById('skipBtn');
+
+    // 更新倒计时显示
+    function updateCountdown() {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+      if (seconds <= 0) {
+        // 倒计时结束，刷新页面
+        location.reload();
+        return;
+      }
+
+      seconds--;
+    }
+
+    // 初始更新并设置定时器
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // 刷新按钮
+    refreshBtn.addEventListener('click', () => {
+      refreshBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 刷新中...';
+      refreshBtn.disabled = true;
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    });
+
+    // 跳过按钮
+    skipBtn.addEventListener('click', () => {
+      if (confirm('确定要离开此页面吗？图片可能尚未准备好。')) {
+        history.back();
+      }
+    });
+
+    // 随机小知识
+    const funFacts = [
+      "GitHub使用全球分布式CDN网络来加速资源访问，同步需要时间。",
+      "图片格式会影响加载速度，WebP通常比JPEG和PNG更小。",
+      "你知道吗？GitHub最初是用Ruby on Rails开发的。",
+      "缓存是加快访问速度的关键，浏览器会存储已访问过的资源。",
+      "GitHub在2008年推出，现在已成为全球最大的代码托管平台。",
+      "使用相对路径引用图片可以避免很多链接问题。",
+      "图片压缩可以显著减小文件大小，同时保持良好质量。",
+      "GitHub Pages提供免费静态网站托管服务，很多人用来展示作品。"
+    ];
+
+    // 随机显示一个小知识
+    function showRandomFact() {
+      const randomIndex = Math.floor(Math.random() * funFacts.length);
+      document.getElementById('funFact').textContent = funFacts[randomIndex];
+    }
+
+    // 每10秒换一个小知识
+    showRandomFact();
+    setInterval(showRandomFact, 10000);
+  </script>
+</body>
+
+</html>
