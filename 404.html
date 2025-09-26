@@ -1,14 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小东西儿 | imgHub</title>
-  <link rel="shortcut icon" href="https://xiaodongxier.com/favicon.ico" type="image/x-icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>请稍等，图片正在加载</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 10px 0;
+    }
+
+    #timer {
+      font-size: 60px;
+      font-weight: bold;
+      margin: 15px 0;
+      color: #38bdf8;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+    }
+
+    #msg {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+
+    canvas {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+
+    #musicTip {
+      margin-top: 20px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  </style>
 </head>
+
 <body>
+  <h1>图片还在路上 🚚💨</h1>
+  <div id="timer">60</div>
+  <div id="msg">别急，一切正在准备中…</div>
+  <canvas id="c" width="400" height="200"></canvas>
+  <div id="musicTip">🎵 如果没有声音，请点击页面以启动音乐</div>
+
+  <!-- 背景音乐，替换 src 为你自己的 mp3 链接 -->
+  <audio id="bgm" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop preload="auto"></audio>
+
   <script>
-    window.location.href = "https://home.wangyongjie.cn";
+    // 倒计时
+    let sec = 60;
+    const timerEl = document.getElementById('timer');
+    const msgEl = document.getElementById('msg');
+    const bgm = document.getElementById('bgm');
+    const messages = [
+      "⌛ 网络正在帮你打包快递…",
+      "🐢 有点慢，但乌龟也能到终点！",
+      "🎵 等待的时候，不妨哼一首歌～",
+      "🤖 正在努力唤醒图片…",
+      "🌌 放松一下眼睛，眺望一下远方吧。"
+    ];
+
+    function tick() {
+      timerEl.textContent = sec;
+      if (sec % 5 === 0) { // 每5秒换一句话
+        msgEl.textContent = messages[Math.floor(Math.random() * messages.length)];
+      }
+      if (sec > 0) {
+        sec--;
+        setTimeout(tick, 1000);
+      }
+      else {
+        msgEl.textContent = "✅ 图片应该能加载了，马上刷新…";
+        setTimeout(() => { location.reload(); }, 2000); // 2秒后自动刷新
+      }
+    }
+    tick();
+
+    // 动画小球
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    let x = 50, y = 50, vx = 3, vy = 2, r = 15;
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      x += vx; y += vy;
+      if (x < r || x > canvas.width - r) vx *= -1;
+      if (y < r || y > canvas.height - r) vy *= -1;
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    // 自动播放音乐（部分浏览器需要用户交互才能真正播放）
+    function playMusic() {
+      bgm.play().catch(() => { /* 静默失败 */ });
+      document.removeEventListener('click', playMusic);
+    }
+    playMusic();
+    document.addEventListener('click', playMusic);
   </script>
 </body>
+
 </html>

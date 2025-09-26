@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>资源准备中...</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #00f5ff, 0 0 10px #00f5ff;
+      }
+
+      to {
+        text-shadow: 0 0 20px #00f5ff, 0 0 40px #00f5ff;
+      }
+    }
+
+    #countdown {
+      font-size: 4em;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    #snake {
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #00f5ff;
+      border-radius: 50%;
+      position: absolute;
+      animation: move 5s linear infinite;
+    }
+
+    @keyframes move {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(280px, 0);
+      }
+
+      50% {
+        transform: translate(280px, 280px);
+      }
+
+      75% {
+        transform: translate(0, 280px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #00f5ff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      color: #000;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00c4cc;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>资源加载中，请耐心等待...</h1>
+  <div id="countdown">60</div>
+  <div id="snake"></div>
+  <button onclick="manualRefresh()">手动刷新</button>
+
+  <!-- 背景音乐 -->
+  <audio id="bgm" autoplay loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    您的浏览器不支持音频播放。
+  </audio>
+
+  <script>
+    let count = 60;
+    const countdownEl = document.getElementById('countdown');
+
+    const timer = setInterval(() => {
+      count--;
+      countdownEl.textContent = count;
+      if (count <= 0) {
+        clearInterval(timer);
+        setTimeout(() => {
+          location.reload();
+        }, 2000); // 0秒后2秒刷新
+      }
+    }, 1000);
+
+    // 生成“蛇”的小点
+    const snake = document.getElementById('snake');
+    for (let i = 0; i < 20; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      dot.style.animationDelay = `${i * 0.2}s`;
+      snake.appendChild(dot);
+    }
+
+    // 手动刷新函数
+    function manualRefresh() {
+      location.reload();
+    }
+
+    // 解决部分浏览器自动播放受限问题
+    const bgm = document.getElementById("bgm");
+    document.body.addEventListener("click", () => {
+      bgm.play().catch(() => { });
+    }, { once: true });
+  </script>
+</body>
+
+</html>
